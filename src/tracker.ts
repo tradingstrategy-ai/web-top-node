@@ -7,7 +7,7 @@ import {
 } from 'http';
 import { getDefaultTags, updateProcessInfo } from './worker';
 
-const DEFAULT_MAX_COMPLETED_TASKS = 50;
+export const DEFAULT_MAX_COMPLETED_TASKS = 50;
 
 class CannotHandleRequest extends Error {}
 
@@ -74,7 +74,7 @@ export class Tracker {
    *
    * @return The task that tracks the request
    */
-  startRequest(request: IncomingMessage, tags?: Tags): HTTPTask {
+  startTask(request: IncomingMessage, tags?: Tags): HTTPTask {
     tags = tags || {};
 
     if (!request.url) {
@@ -121,8 +121,10 @@ export class Tracker {
    *
    * @param request
    * @param response
+   *
+   * @return The updated task information
    */
-  endTask(request: IncomingMessage, response: ServerResponse) {
+  endTask(request: IncomingMessage, response: ServerResponse): HTTPTask {
     // @ts-ignore
     const trackingId: number = request.trackingId || null;
 
@@ -154,8 +156,11 @@ export class Tracker {
     task.status_code = response.statusCode;
     task.status_message = response.statusMessage;
     task.response_headers = convertHeadersToTuples(response.getHeaders());
+    task.recorded_successfully = true;
 
     this.moveToCompleted(trackingId, task);
+
+    return task;
   }
 
   /**
@@ -178,8 +183,10 @@ export class Tracker {
  * - Node.js: Multiple headers are presented as value array instead of value string
  *
  * - Top framework: Multipel headers are presented as repeated tuples in an array
+ *
+ * - All header names are converted to upper case
  */
-function convertHeadersToTuples(
+export function convertHeadersToTuples(
   headers: IncomingHttpHeaders | OutgoingHttpHeaders
 ): Array<string[]> {
   let convertedHeaders: Array<string[]> = [];
@@ -187,10 +194,10 @@ function convertHeadersToTuples(
     let value = headers[key] || '';
     if (Array.isArray(value)) {
       for (let subvalue of value) {
-        convertedHeaders.push([key, subvalue]);
+        convertedHeaders.push([key.toUpperCase(), subvalue]);
       }
     } else {
-      convertedHeaders.push([key, value.toString()]);
+      convertedHeaders.push([key.toUpperCase(), value.toString()]);
     }
   }
   return convertedHeaders;
