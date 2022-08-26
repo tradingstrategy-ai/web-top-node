@@ -92,7 +92,7 @@ export class Tracker {
       method: request.method,
       path: url.pathname,
       params: url.searchParams,
-      tags: {...this.tags, ...tags},
+      tags: { ...this.tags, ...tags },
       client_ip_address: address,
     };
 

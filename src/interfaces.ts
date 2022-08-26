@@ -4,7 +4,6 @@
 
 //const ISO8601DateString = string;
 
-
 /**
  * Telemetry tag map definition.
  */
@@ -47,4 +46,19 @@ interface HTTPTask extends Task {
   response_headers?: Array<string[]>;
   status_code?: number;
   status_message?: string;
+}
+
+
+/**
+ * JSON response for the active tasks action
+ */
+interface ActiveTasksResponse {
+  [key: string]: HTTPTask;
+}
+
+/**
+ * JSON response for the completed tasks action
+ */
+interface CompletedTasksResponse extends Array<HTTPTask> {
+
 }

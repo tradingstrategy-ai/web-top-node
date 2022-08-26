@@ -1,29 +1,23 @@
-import { myPackage } from '../src';
-import {DEFAULT_MAX_COMPLETED_TASKS, Tracker} from "../src/tracker";
-import {IncomingHttpHeaders, IncomingMessage, ServerResponse} from "http";
-
+import { DEFAULT_MAX_COMPLETED_TASKS, Tracker } from '../src/tracker';
+import { IncomingMessage, ServerResponse } from 'http';
 
 function generateMockRequest(): IncomingMessage {
   const mockSocket = {
-    remoteAddress: "127.0.0.1"
+    remoteAddress: '127.0.0.1',
   };
   const request = new IncomingMessage(mockSocket);
 
-  request.url = "https://example.com/foobar?name=grumpy";
-  request.method = "GET";
+  request.url = 'https://example.com/foobar?name=grumpy';
+  request.method = 'GET';
   request.headers = {
-    "user-agent": "Mochi mochi dayo!",
-  }
+    'user-agent': 'Mochi mochi dayo!',
+  };
   return request;
 }
 
 describe('tracker', () => {
-
-
   describe('Tracker', () => {
-
     it('should track a new request', () => {
-
       const tracker = new Tracker();
       const request = generateMockRequest();
       const task = tracker.startTask(request);
@@ -33,14 +27,16 @@ describe('tracker', () => {
       expect(task.task_id).toEqual(1);
 
       // URI parameters
-      expect(task.protocol).toEqual("https:");
-      expect(task.path).toEqual("/foobar");
-      expect(task.method).toEqual("GET");
-      expect(task.host).toEqual("example.com");
-      expect(task.request_headers).toEqual([["USER-AGENT", "Mochi mochi dayo!"]]);
+      expect(task.protocol).toEqual('https:');
+      expect(task.path).toEqual('/foobar');
+      expect(task.method).toEqual('GET');
+      expect(task.host).toEqual('example.com');
+      expect(task.request_headers).toEqual([
+        ['USER-AGENT', 'Mochi mochi dayo!'],
+      ]);
 
       // Connection
-      expect(task.client_ip_address).toEqual("127.0.0.1");
+      expect(task.client_ip_address).toEqual('127.0.0.1');
 
       // Process parameters
       expect(task.host_name).not.toBeUndefined();
@@ -50,7 +46,7 @@ describe('tracker', () => {
       // Tags
       expect(task.tags).not.toBeUndefined();
       // @ts-ignore
-      expect(task.tags["node-version"]).not.toBeUndefined();
+      expect(task.tags['node-version']).not.toBeUndefined();
 
       // Timing
       expect(task.started_at).not.toBeUndefined();
@@ -62,16 +58,15 @@ describe('tracker', () => {
     });
 
     it('should finish a request tracking', () => {
-
       const tracker = new Tracker();
       const request = generateMockRequest();
       const response = new ServerResponse(request);
 
       response.statusCode = 200;
-      response.statusMessage = "OK";
+      response.statusMessage = 'OK';
 
-      request.url = "https://example.com/foobar?name=grumpy";
-      request.method = "GET";
+      request.url = 'https://example.com/foobar?name=grumpy';
+      request.method = 'GET';
 
       tracker.startTask(request);
       const task = tracker.endTask(request, response);
@@ -80,22 +75,19 @@ describe('tracker', () => {
       expect(task.ended_at).not.toBeUndefined();
       expect(task.ended_at).toEqual(task.updated_at);
       expect(task.status_code).toEqual(200);
-      expect(task.status_message).toEqual("OK");
+      expect(task.status_message).toEqual('OK');
       expect(task.recorded_successfully).toEqual(true);
 
       debugger;
       expect(tracker.activeTasks.size).toEqual(0);
       expect(tracker.completedTasks.length).toEqual(1);
-
-
     });
 
     it('should not overflow completed requests', () => {
-
       const tracker = new Tracker();
       const bombCount = 100;
 
-      for(let i=0; i<bombCount; i++) {
+      for (let i = 0; i < bombCount; i++) {
         const request = generateMockRequest();
         const response = new ServerResponse(request);
         tracker.startTask(request);
@@ -103,10 +95,12 @@ describe('tracker', () => {
       }
 
       expect(tracker.activeTasks.size).toEqual(0);
-      expect(tracker.completedTasks.length).toEqual(DEFAULT_MAX_COMPLETED_TASKS);
+      expect(tracker.completedTasks.length).toEqual(
+        DEFAULT_MAX_COMPLETED_TASKS
+      );
 
       expect(tracker.completedTasks[0].task_id).toEqual(100);
-
+      expect(tracker.completedTasks.at(-1).task_id).toEqual(51);
     });
   });
 });

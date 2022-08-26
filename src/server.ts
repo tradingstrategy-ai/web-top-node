@@ -3,7 +3,6 @@
  */
 
 import { Tracker } from './tracker';
-import { IncomingMessage, OutgoingHttpHeaders } from 'http';
 import http from 'http';
 
 /**
@@ -30,7 +29,7 @@ class APIKeyMustGivenError extends Error {}
  *
  * - Each GET needs
  */
-class Server {
+export class Server {
   /**
    * Access control of who can see the active and complete requests.
    *
@@ -113,8 +112,20 @@ class Server {
   /**
    * Get the active tasks
    */
-  getActiveTasks() {
-    this.tracker.activeTasks.entries();
+  getActiveTasks(): ActiveTasksResponse {
+    const tasks = this.tracker.activeTasks.entries();
+    const resp: ActiveTasksResponse = {};
+    for(const [key, value] of tasks) {
+      resp[key] = value;
+    }
+    return resp;
+  }
+
+  /**
+   * Get the completed tasks
+   */
+  getCompletedTasks(): CompletedTasksResponse {
+    return this.tracker.completedTasks;
   }
 
   /**
@@ -137,7 +148,14 @@ class Server {
       return response.end('action parameter missing');
     }
 
+    let resp;
     if (action == WebTopServerActions.active_tasks) {
+      resp = this.getActiveTasks();
+    } else {
+      resp = this.getCompletedTasks();
     }
+
+    response.statusCode = 200;
+    response.end(JSON.stringify(resp));
   }
 }

@@ -14,5 +14,5 @@ export function updateProcessInfo(task: Task) {
  * Get some default tags we can extract from the Node.js run-time environment.
  */
 export function getDefaultTags(): Tags {
-  return {platform: process.platform, "node-version": process.version};
+  return { platform: process.platform, 'node-version': process.version };
 }
