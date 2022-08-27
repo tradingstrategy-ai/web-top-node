@@ -61,8 +61,8 @@ describe('integreration', () => {
         throw new Error(`API returned: ${response.status}: ${response.text}`);
       }
 
-      await expect(response.headers).toContain('content-type');
-      await expect(response.headers['content-type']).toMatch(/json/);
+      expect(response.headers).toContain('content-type');
+      expect(response.headers['content-type']).toMatch(/json/);
     });
 
     it('tracker endpoint gives 405 if no API key is given', async () => {
