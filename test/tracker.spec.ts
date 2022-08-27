@@ -27,7 +27,7 @@ describe('tracker', () => {
       expect(task.task_id).toEqual(1);
 
       // URI parameters
-      expect(task.protocol).toEqual('https:');
+      expect(task.protocol).toEqual('https');
       expect(task.path).toEqual('/foobar');
       expect(task.method).toEqual('GET');
       expect(task.host).toEqual('example.com');

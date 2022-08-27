@@ -152,8 +152,14 @@ describe('integreration', () => {
       expect(completedRequest.task_id).toEqual(1);
       expect(completedRequest.ended_at).not.toBeUndefined();
       expect(completedRequest.path).toEqual("/foobar");
+      expect(completedRequest.recorded_successfully).toEqual(true);
+      expect(completedRequest.status_code).toEqual(200);
+      expect(completedRequest.status_message).toEqual("OK");
 
+      // Check the tracker request looks good
       expect(trackerRequest.path).toEqual("/tracker");
+      expect(trackerRequest.params).toEqual({"action": "active-tasks", "api-key": apiKey});
+
     });
   });
 });

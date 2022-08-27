@@ -32,7 +32,6 @@ describe('integreration', () => {
         .get('/')
         .set('Accept', 'application/json');
 
-      await expect(response.headers['Content-Type']).toMatch(/json/);
       await expect(response.status).toEqual(200);
     });
   });

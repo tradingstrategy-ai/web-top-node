@@ -96,13 +96,16 @@ export class Tracker {
     const trackingId = this.requestCounter++;
     const address = request.socket.remoteAddress;
 
+    // Currently we record HTTP GET params only
+    const params = request.query || undefined;
+
     const task: HTTPTask = {
       task_id: trackingId,
       protocol: url.protocol && trim(url.protocol,":") || null,  // no ending :
       host: url.host,
       method: request.method,
       path: url.pathname,
-      params: url.searchParams,
+      params: params,
       tags: { ...this.tags, ...tags },
       client_ip_address: address,
     };
