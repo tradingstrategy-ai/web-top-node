@@ -29,7 +29,7 @@ class APIKeyMustGivenError extends Error {}
  *
  * - Each GET needs
  */
-export class Server {
+export class TrackerServer {
   /**
    * Access control of who can see the active and complete requests.
    *
@@ -115,7 +115,7 @@ export class Server {
   getActiveTasks(): ActiveTasksResponse {
     const tasks = this.tracker.activeTasks.entries();
     const resp: ActiveTasksResponse = {};
-    for(const [key, value] of tasks) {
+    for (const [key, value] of tasks) {
       resp[key] = value;
     }
     return resp;
@@ -155,7 +155,7 @@ export class Server {
       resp = this.getCompletedTasks();
     }
 
-    response.statusCode = 200;
+    response.writeHead(200, { 'Content-Type': 'application/json' });
     response.end(JSON.stringify(resp));
   }
 }

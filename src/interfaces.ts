@@ -48,7 +48,6 @@ interface HTTPTask extends Task {
   status_message?: string;
 }
 
-
 /**
  * JSON response for the active tasks action
  */
@@ -59,6 +58,4 @@ interface ActiveTasksResponse {
 /**
  * JSON response for the completed tasks action
  */
-interface CompletedTasksResponse extends Array<HTTPTask> {
-
-}
+interface CompletedTasksResponse extends Array<HTTPTask> {}

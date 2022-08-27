@@ -1,3 +1,7 @@
+/**
+ * Test our header conversion function
+ *
+ */
 import { convertHeadersToTuples, Tracker } from '../src/tracker';
 
 describe('tracker', () => {

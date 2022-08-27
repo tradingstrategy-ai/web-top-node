@@ -78,7 +78,7 @@ describe('tracker', () => {
       expect(task.status_message).toEqual('OK');
       expect(task.recorded_successfully).toEqual(true);
 
-      debugger;
+      // Check bookkeeping
       expect(tracker.activeTasks.size).toEqual(0);
       expect(tracker.completedTasks.length).toEqual(1);
     });
