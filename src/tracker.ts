@@ -6,6 +6,7 @@ import {
   ServerResponse,
 } from 'http';
 import { getDefaultTags, updateProcessInfo } from './worker';
+import parseurl from 'parseurl';
 
 export const DEFAULT_MAX_COMPLETED_TASKS = 50;
 
@@ -17,6 +18,7 @@ class CannotTrackRequest extends Error {}
  * Track currently active and past HTTP requests in Node.
  */
 export class Tracker {
+
   /** Tracked ongoing requestes */
   activeTasks: Map<number, HTTPTask>;
 
@@ -81,13 +83,17 @@ export class Tracker {
       throw new CannotHandleRequest(`request.url missing on ${request}`);
     }
 
+    // We use parseurl from Express.js
+    // because we must be able to parse incomplete urls like /tracker
+    // and new URL() cannot do this
+    const url = parseurl(request);
+
     const trackingId = this.requestCounter++;
-    const url = new URL(request.url);
     const address = request.socket.remoteAddress;
 
     const task: HTTPTask = {
       task_id: trackingId,
-      protocol: url.protocol,
+      protocol: url.protocl,
       host: url.host,
       method: request.method,
       path: url.pathname,

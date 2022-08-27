@@ -25,8 +25,8 @@ export function createTrackerMiddleware(tracker: Tracker, tags?: Tags) {
       tracker.startTask(request, tags);
     } catch(e) {
       console.error("Tracker middleware bug", e);
-      response.writeHead(500, "Internal Server Error");
-      response.send("Tracler middleware failure. See logs for mode details.");
+      response.writeHead(500, "Tracker middleware failure");
+      //response.send("Tracler middleware failure. See logs for mode details.");
       response.end();
       return;
     }
