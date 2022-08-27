@@ -1,77 +1,42 @@
-# typescript-npm-package-template
+# Web-top-node
 
-> Template to kickstart creating a Node.js module using TypeScript and VSCode
+Node.js web server support for [web-top](https://github.com/tradingstrategy-ai/web-top)
 
-Inspired by [node-module-boilerplate](https://github.com/sindresorhus/node-module-boilerplate)
+Supported web serves include, but not limited to
+
+* [Node.js built-in HTTP server](https://nodejs.org/api/http.html)
+* [Express](https://expressjs.com/)
+* [Polka](https://github.com/lukeed/polka)
+* All other Express-likes
 
 ## Features
 
-- [Semantic Release](https://github.com/semantic-release/semantic-release)
-- [Issue Templates](https://github.com/miohtama/typescript-npm-package-template/tree/main/.github/ISSUE_TEMPLATE)
-- [GitHub Actions](https://github.com/miohtama/typescript-npm-package-template/tree/main/.github/workflows)
-- [Codecov](https://about.codecov.io/)
-- [VSCode Launch Configurations](https://github.com/miohtama/typescript-npm-package-template/blob/main/.vscode/launch.json)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Husky](https://github.com/typicode/husky)
-- [Lint Staged](https://github.com/okonet/lint-staged)
-- [Commitizen](https://github.com/search?q=commitizen)
-- [Jest](https://jestjs.io/)
-- [ESLint](https://eslint.org/)
-- [Prettier](https://prettier.io/)
+- Track active and completed HTTP requests
+- No separate software or databases are needed; `web-top-node` tracks 
+  any HTTP requests inside Node.js process using internal memory table
+- API key based authentication
+- Support for custom tracking tags
+- [All features of web-top](https://github.com/tradingstrategy-ai/web-top) 
 
-## Getting started
+This tracker backend is suitable for tracking web servers with a single Node.js
+process. If you are running a distributed web server with several Node.js
+processes behind a load balancer, you need to use a 
+[distributed tracker like Redis](https://top-framework.readthedocs.io/en/latest/redis.html).
 
-### Set up your repository
+# Install
 
-**Click the "Use this template" button.**
-
-Alternatively, create a new directory and then run:
+From NPM:
 
 ```bash
-curl -fsSL https://github.com/miohtama/typescript-npm-package-template/archive/main.tar.gz | tar -xz --strip-components=1
-```
-
-Replace `FULL_NAME`, `GITHUB_USER`, and `REPO_NAME` in the script below with your own details to personalize your new package:
-
-```bash
-FULL_NAME="John Smith"
-GITHUB_USER="johnsmith"
-REPO_NAME="my-cool-package"
-sed -i.mybak "s/miohtama/$GITHUB_USER/g; s/typescript-npm-package-template\|my-package-name/$REPO_NAME/g; s/Mikko Ohtamaa/$FULL_NAME/g" package.json package-lock.json README.md
-rm *.mybak
-```
-
-### Add NPM Token
-
-Add your npm token to your GitHub repository secrets as `NPM_TOKEN`.
-
-### Add Codecov integration
-
-Enable the Codecov GitHub App [here](https://github.com/apps/codecov).
-
-**Remove everything from here and above**
-
----
-
-# my-package-name
-
-[![npm package][npm-img]][npm-url]
-[![Build Status][build-img]][build-url]
-[![Downloads][downloads-img]][downloads-url]
-[![Issues][issues-img]][issues-url]
-[![Code Coverage][codecov-img]][codecov-url]
-[![Commitizen Friendly][commitizen-img]][commitizen-url]
-[![Semantic Release][semantic-release-img]][semantic-release-url]
-
-> My awesome module
-
-## Install
-
-```bash
-npm install my-package-name
+npm install web-top-node
 ```
 
 ## Usage
+
+To enable tracking you need 
+- Create tracker backend, with any custom tags you want to associated with your web server 
+- Install middleware that will detect HTTP request start and end
+- Create an API endpoint that will serve this data to `web-top` command line client
 
 ```ts
 import { myPackage } from 'my-package-name';
@@ -80,38 +45,8 @@ myPackage('hello');
 //=> 'hello from my package'
 ```
 
-## API
+# API
 
-### myPackage(input, options?)
-
-#### input
-
-Type: `string`
-
-Lorem ipsum.
-
-#### options
-
-Type: `object`
-
-##### postfix
-
-Type: `string`
-Default: `rainbows`
-
-Lorem ipsum.
-
-[build-img]:https://github.com/miohtama/typescript-npm-package-template/actions/workflows/release.yml/badge.svg
-[build-url]:https://github.com/miohtama/typescript-npm-package-template/actions/workflows/release.yml
-[downloads-img]:https://img.shields.io/npm/dt/typescript-npm-package-template
-[downloads-url]:https://www.npmtrends.com/typescript-npm-package-template
-[npm-img]:https://img.shields.io/npm/v/typescript-npm-package-template
-[npm-url]:https://www.npmjs.com/package/typescript-npm-package-template
-[issues-img]:https://img.shields.io/github/issues/miohtama/typescript-npm-package-template
-[issues-url]:https://github.com/miohtama/typescript-npm-package-template/issues
-[codecov-img]:https://codecov.io/gh/miohtama/typescript-npm-package-template/branch/main/graph/badge.svg
-[codecov-url]:https://codecov.io/gh/miohtama/typescript-npm-package-template
-[semantic-release-img]:https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
-[semantic-release-url]:https://github.com/semantic-release/semantic-release
-[commitizen-img]:https://img.shields.io/badge/commitizen-friendly-brightgreen.svg
-[commitizen-url]:http://commitizen.github.io/cz-cli/
+- [Tracker](./src/tracker.ts)
+- [Middleware](./src/middleware.ts)
+- [Tracker API endpoint](./src/server.ts)
