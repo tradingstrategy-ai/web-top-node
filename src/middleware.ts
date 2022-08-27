@@ -1,7 +1,7 @@
 /**
  * HTTP tracking middleware for Node.js web servers.
  */
-import type { RequestHandler } from "express";
+import type { RequestHandler } from 'express';
 import { Tracker } from './tracker';
 
 /**
@@ -21,23 +21,27 @@ import { Tracker } from './tracker';
  */
 export function createTrackerMiddleware(tracker: Tracker, tags?: Tags) {
   const middleware: RequestHandler = (request, response, next) => {
-    try{
+    try {
       tracker.startTask(request, tags);
-    } catch(e) {
-      console.error("Tracker middleware bug", e);
-      response.writeHead(500, "Tracker middleware failure");
+    } catch (e) {
+      console.error('Tracker middleware bug', e);
+      response.writeHead(500, 'Tracker middleware failure');
       //response.send("Tracler middleware failure. See logs for mode details.");
       response.end();
       return;
     }
 
-    request.on('close', tracker.endTask);
+    function onClose() {
+      tracker.endTask(request, response);
+    }
+
+    request.on('close', onClose);
     request.on('finish', () => {
-      request.off('close', tracker.endTask);
+      request.off('close', onClose);
     });
 
     next();
-  }
+  };
 
   return middleware;
 }

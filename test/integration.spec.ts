@@ -1,7 +1,7 @@
 import { convertHeadersToTuples, Tracker } from '../src/tracker';
 import { createTrackerMiddleware } from '../src/middleware';
-import polka, {Polka} from 'polka';
-import { TrackerServer } from '../src/server';
+import polka, { Polka } from 'polka';
+import {TrackerServer, WebTopServerActions} from '../src/server';
 import { IncomingMessage } from 'http';
 import { agent as request } from 'supertest';
 
@@ -21,29 +21,27 @@ function generateMockRequest(): IncomingMessage {
 
 describe('integreration', () => {
   describe('middleware', () => {
-
     let testPolka: Polka;
     let tracker: Tracker;
+    const apiKey = '01234567789ABCDEF';
 
     beforeEach(() => {
-      const apiKey = '01234567789ABCDEF';
       tracker = new Tracker();
       const trackerMiddleware = createTrackerMiddleware(tracker);
       const trackerServer = new TrackerServer(tracker, apiKey);
 
       testPolka = polka()
-          .use(trackerMiddleware)
-          .get('/tracker', trackerServer.serve.bind(trackerServer))
-          .get('/', async (req, res) => {
-            res.end('Hello world');
-          });
-
+        .use(trackerMiddleware)
+        .get('/tracker', trackerServer.serve.bind(trackerServer))
+        .get('/', async (req, res) => {
+          res.end('Hello world');
+        });
     });
 
     afterEach(() => {
-      if(testPolka) {
-        if(testPolka.server) {
-          testPolka.server.close()
+      if (testPolka) {
+        if (testPolka.server) {
+          testPolka.server.close();
         }
       }
     });
@@ -55,13 +53,29 @@ describe('integreration', () => {
 
       // Get active requests from the tracker
       const response = await request(testPolka.handler)
+        .get(`/tracker`)
+        .query({ 'api-key': apiKey, "action": WebTopServerActions.active_tasks })
+        .set('Accept', 'application/json');
+
+      if (response.statusCode != 200) {
+        throw new Error(`API returned: ${response.status}: ${response.text}`);
+      }
+
+      await expect(response.headers).toContain('content-type');
+      await expect(response.headers['content-type']).toMatch(/json/);
+    });
+
+    it('tracker endpoint gives 405 if no API key is given', async () => {
+      // Spoof an active request
+      const mockRequest = generateMockRequest();
+      tracker.startTask(mockRequest);
+
+      // Get active requests from the tracker
+      const response = await request(testPolka.handler)
         .get('/tracker')
         .set('Accept', 'application/json');
 
-      await expect(response.headers["Content-Type"]).toMatch(/json/);
-      await expect(response.status).toEqual(200);
-
+      expect(response.status).toEqual(403);
     });
-
   });
 });

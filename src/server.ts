@@ -10,9 +10,9 @@ import { Tracker } from './tracker';
 /**
  *
  */
-enum WebTopServerActions {
-  active_tasks = 'active_tasks',
-  completed_tasks = 'completed_tasks',
+export enum WebTopServerActions {
+  active_tasks = 'active-tasks',
+  completed_tasks = 'completedtasks',
 }
 
 /**
@@ -20,12 +20,10 @@ enum WebTopServerActions {
  */
 class APIKeyMustGivenError extends Error {}
 
-
 /**
  * TrackerServer.serve() has invalid this.
  */
 class InvalidBindError extends Error {}
-
 
 /**
  * :(
@@ -104,9 +102,7 @@ export class TrackerServer {
       return false;
     }
 
-    // @ts-ignore
-    const parsedUrl = new URL(request.url);
-    const requestApiKey = parsedUrl.searchParams.get('api-key');
+    const requestApiKey = request.query["api-key"];
     if (!requestApiKey) {
       response.statusCode = 403;
       response.end('api-key parameter missing');
@@ -149,8 +145,7 @@ export class TrackerServer {
    * @param response
    */
   serve(request: http.IncomingMessage, response: http.ServerResponse) {
-
-    if(!(this instanceof TrackerServer)) {
+    if (!(this instanceof TrackerServer)) {
       throw new InvalidBindError(`Invalid this: ${this}`);
     }
 
@@ -160,11 +155,12 @@ export class TrackerServer {
     }
 
     const parsedUrl = parseurl(request);
-    if(!parsedUrl) {
-      throw new BadUrlError("Could not parse URL");
+    if (!parsedUrl) {
+      throw new BadUrlError('Could not parse URL');
     }
 
-    const action = parsedUrl.searchParams.get('action');
+    // @ts-ignore
+    const action = request.query.action;
 
     if (!action) {
       response.statusCode = 420;
@@ -174,11 +170,14 @@ export class TrackerServer {
     let data;
     if (action == WebTopServerActions.active_tasks) {
       data = this.getActiveTasks();
-    } else {
+    } else if (action == WebTopServerActions.completed_tasks) {
       data = this.getCompletedTasks();
+    } else {
+      response.statusCode = 420;
+      return response.end(`Invalid action parameter ${action}`);
     }
 
-    //response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.status(200).json(data);
+    response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.write(JSON.stringify(data));
   }
 }

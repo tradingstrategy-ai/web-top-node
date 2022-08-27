@@ -18,7 +18,6 @@ class CannotTrackRequest extends Error {}
  * Track currently active and past HTTP requests in Node.
  */
 export class Tracker {
-
   /** Tracked ongoing requestes */
   activeTasks: Map<number, HTTPTask>;
 
@@ -87,7 +86,7 @@ export class Tracker {
     // because we must be able to parse incomplete urls like /tracker
     // and new URL() cannot do this
     const url = parseurl(request);
-    if(!url) {
+    if (!url) {
       throw new CannotHandleRequest(`request.url unparseable`);
     }
 
