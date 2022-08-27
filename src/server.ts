@@ -2,8 +2,10 @@
  * A server interface for web-top client to get the active tasks from this Node.js process.
  */
 
-import { Tracker } from './tracker';
 import http from 'http';
+import parseurl from 'parseurl';
+
+import { Tracker } from './tracker';
 
 /**
  *
@@ -17,6 +19,18 @@ enum WebTopServerActions {
  * API key is not set.
  */
 class APIKeyMustGivenError extends Error {}
+
+
+/**
+ * TrackerServer.serve() has invalid this.
+ */
+class InvalidBindError extends Error {}
+
+
+/**
+ * :(
+ */
+class BadUrlError extends Error {}
 
 /**
  * A web-top server.
@@ -135,12 +149,21 @@ export class TrackerServer {
    * @param response
    */
   serve(request: http.IncomingMessage, response: http.ServerResponse) {
+
+    if(!(this instanceof TrackerServer)) {
+      throw new InvalidBindError(`Invalid this: ${this}`);
+    }
+
     // Authentication failed?
     if (!this.authenticate(request, response)) {
       return;
     }
 
-    const parsedUrl = new URL(request.url);
+    const parsedUrl = parseurl(request);
+    if(!parsedUrl) {
+      throw new BadUrlError("Could not parse URL");
+    }
+
     const action = parsedUrl.searchParams.get('action');
 
     if (!action) {
@@ -148,14 +171,14 @@ export class TrackerServer {
       return response.end('action parameter missing');
     }
 
-    let resp;
+    let data;
     if (action == WebTopServerActions.active_tasks) {
-      resp = this.getActiveTasks();
+      data = this.getActiveTasks();
     } else {
-      resp = this.getCompletedTasks();
+      data = this.getCompletedTasks();
     }
 
-    response.writeHead(200, { 'Content-Type': 'application/json' });
-    response.end(JSON.stringify(resp));
+    //response.writeHead(200, { 'Content-Type': 'application/json' });
+    response.status(200).json(data);
   }
 }

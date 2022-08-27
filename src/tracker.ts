@@ -92,7 +92,7 @@ export class Tracker {
     }
 
     const trackingId = this.requestCounter++;
-    const address = request.socket.resmoteAddress;
+    const address = request.socket.remoteAddress;
 
     const task: HTTPTask = {
       task_id: trackingId,

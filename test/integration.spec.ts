@@ -33,7 +33,7 @@ describe('integreration', () => {
 
       testPolka = polka()
           .use(trackerMiddleware)
-          .get('/tracker', trackerServer.serve)
+          .get('/tracker', trackerServer.serve.bind(trackerServer))
           .get('/', async (req, res) => {
             res.end('Hello world');
           });
