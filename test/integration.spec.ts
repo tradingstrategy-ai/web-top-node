@@ -146,7 +146,7 @@ describe('integreration', () => {
       data = JSON.parse(response.text);
       // The test request + first tracker request complete
       expect(Object.keys(data).length).toEqual(2);
-      const completedRequest = data[1];
+      const completedRequest: HTTPTask = data[1];
       const trackerRequest = data[0];
 
       expect(completedRequest.task_id).toEqual(1);
@@ -155,6 +155,8 @@ describe('integreration', () => {
       expect(completedRequest.recorded_successfully).toEqual(true);
       expect(completedRequest.status_code).toEqual(200);
       expect(completedRequest.status_message).toEqual("OK");
+      const tags = completedRequest.tags;
+      expect(tags.platform).not.toBeUndefined();
 
       // Check the tracker request looks good
       expect(trackerRequest.path).toEqual("/tracker");
