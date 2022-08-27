@@ -62,6 +62,20 @@ describe('integreration', () => {
       }
 
       expect(response.headers['content-type']).toMatch(/json/);
+
+      const data = JSON.parse(response.text);
+      // The mock request and /tracker request
+      expect(Object.keys(data).length).toEqual(2);
+      const activeRequest = data[1];
+      expect(activeRequest.task_id).toEqual(1);
+      expect(activeRequest.protocol).toEqual("https");
+      expect(activeRequest.host).toEqual("example.com");
+
+      const apiRequest = data[2];
+      expect(apiRequest.path).toEqual("/tracker");
+      expect(apiRequest.method).toEqual("GET");
+      expect(apiRequest.process_id).toBeGreaterThan(1);
+
     });
 
     it('tracker endpoint gives 405 if no API key is given', async () => {
