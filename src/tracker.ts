@@ -87,13 +87,16 @@ export class Tracker {
     // because we must be able to parse incomplete urls like /tracker
     // and new URL() cannot do this
     const url = parseurl(request);
+    if(!url) {
+      throw new CannotHandleRequest(`request.url unparseable`);
+    }
 
     const trackingId = this.requestCounter++;
-    const address = request.socket.remoteAddress;
+    const address = request.socket.resmoteAddress;
 
     const task: HTTPTask = {
       task_id: trackingId,
-      protocol: url.protocl,
+      protocol: url.protocol,
       host: url.host,
       method: request.method,
       path: url.pathname,
