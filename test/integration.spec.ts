@@ -1,8 +1,8 @@
-import { convertHeadersToTuples, Tracker } from '../src/tracker';
+import { Tracker } from '../src/tracker';
 import { createTrackerMiddleware } from '../src/middleware';
 import polka, { Polka } from 'polka';
-import {TrackerServer, WebTopServerActions} from '../src/server';
-import {IncomingMessage, ServerResponse} from 'http';
+import { TrackerServer, WebTopServerActions } from '../src/server';
+import { IncomingMessage, ServerResponse } from 'http';
 import { agent as request } from 'supertest';
 
 function generateMockRequest(): IncomingMessage {
@@ -25,7 +25,6 @@ function generateMockResponse(request: IncomingMessage) {
   response.statusMessage = 'OK';
   return response;
 }
-
 
 describe('integreration', () => {
   describe('middleware', () => {
@@ -62,7 +61,7 @@ describe('integreration', () => {
       // Get active requests from the tracker
       const response = await request(testPolka.handler)
         .get(`/tracker`)
-        .query({ 'api-key': apiKey, "action": WebTopServerActions.active_tasks })
+        .query({ 'api-key': apiKey, action: WebTopServerActions.active_tasks })
         .set('Accept', 'application/json');
 
       if (response.statusCode != 200) {
@@ -76,12 +75,12 @@ describe('integreration', () => {
       expect(Object.keys(data).length).toEqual(2);
       const activeRequest = data[1];
       expect(activeRequest.task_id).toEqual(1);
-      expect(activeRequest.protocol).toEqual("https");
-      expect(activeRequest.host).toEqual("example.com");
+      expect(activeRequest.protocol).toEqual('https');
+      expect(activeRequest.host).toEqual('example.com');
 
       const apiRequest = data[2];
-      expect(apiRequest.path).toEqual("/tracker");
-      expect(apiRequest.method).toEqual("GET");
+      expect(apiRequest.path).toEqual('/tracker');
+      expect(apiRequest.method).toEqual('GET');
       expect(apiRequest.process_id).toBeGreaterThan(1);
     });
 
@@ -106,7 +105,7 @@ describe('integreration', () => {
       // Get active requests from the tracker
       const response = await request(testPolka.handler)
         .get('/tracker')
-        .query({ 'api-key': "wrong", "action": WebTopServerActions.active_tasks })
+        .query({ 'api-key': 'wrong', action: WebTopServerActions.active_tasks })
         .set('Accept', 'application/json');
 
       expect(response.status).toEqual(403);
@@ -122,7 +121,7 @@ describe('integreration', () => {
       // Get active requests from the tracker
       let response = await request(testPolka.handler)
         .get(`/tracker`)
-        .query({ 'api-key': apiKey, "action": WebTopServerActions.active_tasks })
+        .query({ 'api-key': apiKey, action: WebTopServerActions.active_tasks })
         .set('Accept', 'application/json');
 
       if (response.statusCode != 200) {
@@ -136,7 +135,10 @@ describe('integreration', () => {
       // Get complete requests from the tracker
       response = await request(testPolka.handler)
         .get(`/tracker`)
-        .query({ 'api-key': apiKey, "action": WebTopServerActions.completed_tasks })
+        .query({
+          'api-key': apiKey,
+          action: WebTopServerActions.completed_tasks,
+        })
         .set('Accept', 'application/json');
 
       if (response.statusCode != 200) {
@@ -151,17 +153,19 @@ describe('integreration', () => {
 
       expect(completedRequest.task_id).toEqual(1);
       expect(completedRequest.ended_at).not.toBeUndefined();
-      expect(completedRequest.path).toEqual("/foobar");
+      expect(completedRequest.path).toEqual('/foobar');
       expect(completedRequest.recorded_successfully).toEqual(true);
       expect(completedRequest.status_code).toEqual(200);
-      expect(completedRequest.status_message).toEqual("OK");
+      expect(completedRequest.status_message).toEqual('OK');
       const tags = completedRequest.tags;
       expect(tags.platform).not.toBeUndefined();
 
       // Check the tracker request looks good
-      expect(trackerRequest.path).toEqual("/tracker");
-      expect(trackerRequest.params).toEqual({"action": "active-tasks", "api-key": apiKey});
-
+      expect(trackerRequest.path).toEqual('/tracker');
+      expect(trackerRequest.params).toEqual({
+        action: 'active-tasks',
+        'api-key': apiKey,
+      });
     });
   });
 });

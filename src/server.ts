@@ -102,7 +102,7 @@ export class TrackerServer {
       return false;
     }
 
-    const requestApiKey = request.query["api-key"];
+    const requestApiKey = request.query['api-key'];
     if (!requestApiKey) {
       response.statusCode = 403;
       response.end('api-key parameter missing');

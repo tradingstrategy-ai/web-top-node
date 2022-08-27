@@ -101,7 +101,7 @@ export class Tracker {
 
     const task: HTTPTask = {
       task_id: trackingId,
-      protocol: url.protocol && trim(url.protocol,":") || null,  // no ending :
+      protocol: (url.protocol && trim(url.protocol, ':')) || null, // no ending :
       host: url.host,
       method: request.method,
       path: url.pathname,
