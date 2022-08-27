@@ -14,6 +14,9 @@ class CannotHandleRequest extends Error {}
 
 class CannotTrackRequest extends Error {}
 
+// https://stackoverflow.com/a/55641743/315168
+const trim = (str, chars) => str.split(chars).filter(Boolean).join(chars);
+
 /**
  * Track currently active and past HTTP requests in Node.
  */
@@ -95,7 +98,7 @@ export class Tracker {
 
     const task: HTTPTask = {
       task_id: trackingId,
-      protocol: url.protocol,
+      protocol: url.protocol && trim(url.protocol,":") || null,  // no ending :
       host: url.host,
       method: request.method,
       path: url.pathname,

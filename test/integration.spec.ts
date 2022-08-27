@@ -46,7 +46,7 @@ describe('integreration', () => {
       }
     });
 
-    it('should return active request', async () => {
+    it('/tracker API returns active request', async () => {
       // Spoof an active request
       const mockRequest = generateMockRequest();
       tracker.startTask(mockRequest);
@@ -75,10 +75,9 @@ describe('integreration', () => {
       expect(apiRequest.path).toEqual("/tracker");
       expect(apiRequest.method).toEqual("GET");
       expect(apiRequest.process_id).toBeGreaterThan(1);
-
     });
 
-    it('tracker endpoint gives 405 if no API key is given', async () => {
+    it('tracker endpoint gives 403 if no API key is given', async () => {
       // Spoof an active request
       const mockRequest = generateMockRequest();
       tracker.startTask(mockRequest);
@@ -90,5 +89,20 @@ describe('integreration', () => {
 
       expect(response.status).toEqual(403);
     });
+
+    it('tracker endpoint gives 403 on wrong API key', async () => {
+      // Spoof an active request
+      const mockRequest = generateMockRequest();
+      tracker.startTask(mockRequest);
+
+      // Get active requests from the tracker
+      const response = await request(testPolka.handler)
+        .get('/tracker')
+        .query({ 'api-key': "wrong", "action": WebTopServerActions.active_tasks })
+        .set('Accept', 'application/json');
+
+      expect(response.status).toEqual(403);
+    });
+
   });
 });
