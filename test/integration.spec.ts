@@ -61,7 +61,6 @@ describe('integreration', () => {
         throw new Error(`API returned: ${response.status}: ${response.text}`);
       }
 
-      expect(response.headers).toContain('content-type');
       expect(response.headers['content-type']).toMatch(/json/);
     });
 
