@@ -2,7 +2,7 @@ import { convertHeadersToTuples, Tracker } from '../src/tracker';
 import { createTrackerMiddleware } from '../src/middleware';
 import polka, { Polka } from 'polka';
 import {TrackerServer, WebTopServerActions} from '../src/server';
-import { IncomingMessage } from 'http';
+import {IncomingMessage, ServerResponse} from 'http';
 import { agent as request } from 'supertest';
 
 function generateMockRequest(): IncomingMessage {
@@ -18,6 +18,14 @@ function generateMockRequest(): IncomingMessage {
   };
   return request;
 }
+
+function generateMockResponse(request: IncomingMessage) {
+  const response = new ServerResponse(request);
+  response.statusCode = 200;
+  response.statusMessage = 'OK';
+  return response;
+}
+
 
 describe('integreration', () => {
   describe('middleware', () => {
@@ -104,5 +112,48 @@ describe('integreration', () => {
       expect(response.status).toEqual(403);
     });
 
+    it('/tracker API returns completed request', async () => {
+      // Spoof an active request
+      const mockRequest = generateMockRequest();
+      const mockResponse = generateMockResponse(mockRequest);
+      tracker.startTask(mockRequest);
+      tracker.endTask(mockRequest, mockResponse);
+
+      // Get active requests from the tracker
+      let response = await request(testPolka.handler)
+        .get(`/tracker`)
+        .query({ 'api-key': apiKey, "action": WebTopServerActions.active_tasks })
+        .set('Accept', 'application/json');
+
+      if (response.statusCode != 200) {
+        throw new Error(`API returned: ${response.status}: ${response.text}`);
+      }
+      expect(response.headers['content-type']).toMatch(/json/);
+      let data = JSON.parse(response.text);
+      // The test request has successfully been moved to complete
+      expect(Object.keys(data).length).toEqual(1);
+
+      // Get complete requests from the tracker
+      response = await request(testPolka.handler)
+        .get(`/tracker`)
+        .query({ 'api-key': apiKey, "action": WebTopServerActions.completed_tasks })
+        .set('Accept', 'application/json');
+
+      if (response.statusCode != 200) {
+        throw new Error(`API returned: ${response.status}: ${response.text}`);
+      }
+      expect(response.headers['content-type']).toMatch(/json/);
+      data = JSON.parse(response.text);
+      // The test request + first tracker request complete
+      expect(Object.keys(data).length).toEqual(2);
+      const completedRequest = data[1];
+      const trackerRequest = data[0];
+
+      expect(completedRequest.task_id).toEqual(1);
+      expect(completedRequest.ended_at).not.toBeUndefined();
+      expect(completedRequest.path).toEqual("/foobar");
+
+      expect(trackerRequest.path).toEqual("/tracker");
+    });
   });
 });
