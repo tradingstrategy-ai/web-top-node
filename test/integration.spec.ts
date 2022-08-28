@@ -1,3 +1,7 @@
+/**
+ * Node.js tracking integration tests with Polka server.
+ *
+ */
 import { Tracker } from '../src/tracker';
 import { createTrackerMiddleware } from '../src/middleware';
 import polka, { Polka } from 'polka';

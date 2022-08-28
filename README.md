@@ -1,6 +1,7 @@
 # Web-top-node
 
-Node.js web server support for [web-top](https://github.com/tradingstrategy-ai/web-top)
+Display active and complete HTTP requests of your web server easily.
+Node.js web server support for [web-top](https://github.com/tradingstrategy-ai/web-top).
 
 Supported web serves include, but not limited to
 
@@ -11,10 +12,12 @@ Supported web serves include, but not limited to
 
 ## Features
 
+- Use [web-top](https://github.com/tradingstrategy-ai/web-top) client
 - Track active and completed HTTP requests
-- No separate software or databases are needed; `web-top-node` tracks 
+- Detect stalled or hung requests
+- No separate software installation outside Node.js needed; `web-top-node` tracks 
   any HTTP requests inside Node.js process using internal memory table
-- API key based authentication
+- API key based authentication 
 - Support for custom tracking tags
 - [All features of web-top](https://github.com/tradingstrategy-ai/web-top) 
 
@@ -46,6 +49,8 @@ myPackage('hello');
 ```
 
 # API
+
+Browse source code on Github.
 
 - [Tracker](./src/tracker.ts)
 - [Middleware](./src/middleware.ts)

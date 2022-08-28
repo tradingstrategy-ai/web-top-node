@@ -1,4 +1,6 @@
-/** If not set what is the size of completed tasks ring buffer */
+/**
+ * Internal request tracking backend for Node.js
+ */
 import {
   IncomingHttpHeaders,
   IncomingMessage,
@@ -8,19 +10,25 @@ import {
 import { getDefaultTags, updateProcessInfo } from './worker';
 import parseurl from 'parseurl';
 
-export const DEFAULT_MAX_COMPLETED_TASKS = 50;
+/** If not set what is the size of completed tasks ring buffer */
+export const DEFAULT_MAX_COMPLETED_TASKS = 256;
 
+/** Something from with Request object and cannot read it */
 class CannotHandleRequest extends Error {}
 
+/** Tracking of the request failed for some reason */
 class CannotTrackRequest extends Error {}
 
 // https://stackoverflow.com/a/55641743/315168
 const trim = (str, chars) => str.split(chars).filter(Boolean).join(chars);
 
 /**
- * Track currently active and past HTTP requests in Node.
+ * Track currently active and past HTTP requests in Node.js.
+ *
+ * This hooks into the web server via startTask/endTask functions.
  */
 export class Tracker {
+
   /** Tracked ongoing requestes */
   activeTasks: Map<number, HTTPTask>;
 
@@ -202,7 +210,7 @@ export class Tracker {
  */
 export function convertHeadersToTuples(
   headers: IncomingHttpHeaders | OutgoingHttpHeaders
-): Array<string[]> {
+): WSGILikeHeaders {
   let convertedHeaders: Array<string[]> = [];
   for (let key in headers) {
     let value = headers[key] || '';

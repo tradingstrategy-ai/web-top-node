@@ -1,3 +1,8 @@
+/**
+ * Polka middleware error test code.
+ *
+ * TODO: Clean up and remove.
+ */
 import polka, { Polka } from 'polka';
 import { agent as request } from 'supertest';
 

@@ -1,5 +1,5 @@
 /**
- * Worker information management.
+ * Capture information about Node.js worker process.
  */
 import * as os from 'os';
 
@@ -12,7 +12,13 @@ export function updateProcessInfo(task: Task) {
 
 /**
  * Get some default tags we can extract from the Node.js run-time environment.
+ *
+ * See OpenTelemetry attributes https://lightstep.com/opentelemetry/attributes-and-labels
+ * for inspiration.
  */
 export function getDefaultTags(): Tags {
-  return { platform: process.platform, 'node-version': process.version };
+  return {
+    'node.platform': process.platform,
+    'node.version': process.version
+  };
 }

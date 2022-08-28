@@ -1,3 +1,7 @@
+/**
+ * Testing Node.js request tracking backend.
+ */
+
 import { DEFAULT_MAX_COMPLETED_TASKS, Tracker } from '../src/tracker';
 import { IncomingMessage, ServerResponse } from 'http';
 

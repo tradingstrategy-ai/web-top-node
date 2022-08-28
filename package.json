@@ -1,7 +1,7 @@
 {
-  "name": "typescript-npm-package-template",
-  "version": "0.0.0-development",
-  "description": "A template for creating npm packages using TypeScript and VSCode",
+  "name": "web-top-node",
+  "version": "0.1-beta.1",
+  "description": "Display active and complete HTTP requests of your web server easily",
   "main": "./lib/src/index.js",
   "files": [
     "lib/**/*"
@@ -19,13 +19,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/miohtama/typescript-npm-package-template.git"
+    "url": "git+https://github.com/tradingstrategy-ai/web-top-node.git"
   },
   "license": "MIT",
   "author": {
     "name": "Mikko Ohtamaa",
-    "email": "miohtama@users.noreply.github.com",
-    "url": "https://github.com/miohtama"
+    "email": "tradingstrategy-ai@users.noreply.github.com",
+    "url": "https://github.com/tradingstrategy-ai"
   },
   "engines": {
     "node": ">=12.0"
@@ -33,12 +33,15 @@
   "keywords": [
     "monitoring",
     "http",
-    "top"
+    "web",
+    "express",
+    "polka",
+    "cli"
   ],
   "bugs": {
-    "url": "https://github.com/miohtama/typescript-npm-package-template/issues"
+    "url": "https://github.com/tradingstrategy-ai/web-top-node/issues"
   },
-  "homepage": "https://github.com/miohtama/typescript-npm-package-template#readme",
+  "homepage": "https://github.com/tradingstrategy-ai/web-top-node#readme",
   "devDependencies": {
     "@types/jest": "^27.5.2",
     "@types/node": "^12.20.11",
@@ -64,7 +67,7 @@
   },
   "config": {
     "commitizen": {
-      "path": "./node_modules/@miohtama/cz-conventional-changelog"
+      "path": "./node_modules/@tradingstrategy-ai/cz-conventional-changelog"
     }
   },
   "lint-staged": {
