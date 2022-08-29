@@ -48,10 +48,10 @@ export class Tracker {
   /** Running counter to assign ids for requests */
   requestCounter: number;
 
-  /** Do not track this paths
+  /** Do not track these paths
    *
    * Blacklist of paths that should not go to the tracking.
-   * E.g. /tracker API requests themselves.
+   * E.g. `/tracker` API requests themselves.
    */
   ignorePaths: string[];
 
@@ -62,18 +62,19 @@ export class Tracker {
    *  Number of completed requests to keep in the buffe.r
    *  If not given use `process.env.TOP_MAX_COMPLETED_TASKS`
    *
-   * @param tags If not given use getDefaultTags()
+   * @param tags
+   *  If not given use getDefaultTags()
    *
    * @param ignorePaths
-   *  Do not track this paths (like fracker itself).
+   *  Do not track these paths (like tracker itself).
    */
   constructor(maxCompletedTasks?: number, tags?: Tags, ignorePaths?: string[]) {
     this.activeTasks = new Map();
     this.completedTasks = [];
     this.tags = tags || getDefaultTags();
 
-    if(!ignorePaths) {
-      ignorePaths = ["/tracker"]
+    if (!ignorePaths) {
+      ignorePaths = ['/tracker'];
     }
     this.ignorePaths = ignorePaths;
 
@@ -92,13 +93,15 @@ export class Tracker {
 
   /**
    * Should we ignore this HTTP request?
+   *
+   * Do the path based check based on `ignorePath` list.
    */
   isIgnoredRequest(request: IncomingMessage): boolean {
     const url = parseurl(request);
-    if(!url) {
+    if (!url) {
       return false;
     }
-    const path = url.pathname || "";
+    const path = url.pathname || '';
     return this.ignorePaths.includes(path);
   }
 
@@ -115,8 +118,7 @@ export class Tracker {
    *  or null if the request is on ignore list
    */
   startTask(request: IncomingMessage, tags?: Tags): HTTPTask | null {
-
-    if(this.isIgnoredRequest(request)) {
+    if (this.isIgnoredRequest(request)) {
       return null;
     }
 
@@ -183,8 +185,7 @@ export class Tracker {
    *  or null if the request is on ignore list
    */
   endTask(request: IncomingMessage, response: ServerResponse): HTTPTask | null {
-
-    if(this.isIgnoredRequest(request)) {
+    if (this.isIgnoredRequest(request)) {
       return null;
     }
 
