@@ -19,6 +19,6 @@ export function updateProcessInfo(task: Task) {
 export function getDefaultTags(): Tags {
   return {
     'node.platform': process.platform,
-    'node.version': process.version
+    'node.version': process.version,
   };
 }

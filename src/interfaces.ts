@@ -11,7 +11,10 @@ type ISO8601Date = string;
  * Telemetry tag map definition.
  *
  * For inspiration,
- * see OpenTelemetry attributes https://lightstep.com/opentelemetry/attributes-and-labels
+ * see OpenTelemetry attributes
+ *
+ * - https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/common/README.md#attribute
+ * - https://lightstep.com/opentelemetry/attributes-and-labels
  *
  * Tag keys may be namespaced with dot.
  *

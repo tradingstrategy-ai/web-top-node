@@ -9,6 +9,7 @@ function generateMockRequest(): IncomingMessage {
   const mockSocket = {
     remoteAddress: '127.0.0.1',
   };
+  // @ts-ignore
   const request = new IncomingMessage(mockSocket);
 
   request.url = 'https://example.com/foobar?name=grumpy';
@@ -104,6 +105,7 @@ describe('tracker', () => {
       );
 
       expect(tracker.completedTasks[0].task_id).toEqual(100);
+      // @ts-ignore
       expect(tracker.completedTasks.at(-1).task_id).toEqual(51);
     });
   });

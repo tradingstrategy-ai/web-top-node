@@ -13,6 +13,7 @@ function generateMockRequest(): IncomingMessage {
   const mockSocket = {
     remoteAddress: '127.0.0.1',
   };
+  // @ts-ignore
   const request = new IncomingMessage(mockSocket);
 
   request.url = 'https://example.com/foobar?name=grumpy';
@@ -161,7 +162,7 @@ describe('integreration', () => {
       expect(completedRequest.recorded_successfully).toEqual(true);
       expect(completedRequest.status_code).toEqual(200);
       expect(completedRequest.status_message).toEqual('OK');
-      const tags = completedRequest.tags;
+      const tags = completedRequest.tags || {};
       expect(tags.platform).not.toBeUndefined();
 
       // Check the tracker request looks good

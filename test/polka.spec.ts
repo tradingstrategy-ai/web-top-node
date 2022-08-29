@@ -6,6 +6,7 @@
 import polka, { Polka } from 'polka';
 import { agent as request } from 'supertest';
 
+// @ts-ignore
 function brokenMiddleware(req, res, next) {
   res.end();
   throw new Error('foobar');

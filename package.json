@@ -1,7 +1,7 @@
 {
-  "name": "web-top-node",
-  "version": "0.1-beta.1",
-  "description": "Display active and complete HTTP requests of your web server easily",
+  "name": "@trading-strategy-ai/web-top-node",
+  "version": "0.1.0-beta.6",
+  "description": "Display curretly active and complete HTTP requests of a Node.js web server",
   "main": "./lib/src/index.js",
   "files": [
     "lib/**/*"
@@ -9,7 +9,6 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf ./lib/",
-    "cm": "cz",
     "lint": "eslint ./src/ --fix",
     "prepare": "husky install",
     "semantic-release": "semantic-release",
@@ -24,7 +23,7 @@
   "license": "MIT",
   "author": {
     "name": "Mikko Ohtamaa",
-    "email": "tradingstrategy-ai@users.noreply.github.com",
+    "email": "miohtama@users.noreply.github.com",
     "url": "https://github.com/tradingstrategy-ai"
   },
   "engines": {
@@ -41,7 +40,7 @@
   "bugs": {
     "url": "https://github.com/tradingstrategy-ai/web-top-node/issues"
   },
-  "homepage": "https://github.com/tradingstrategy-ai/web-top-node#readme",
+  "homepage": "https://top-framework.readthedocs.io/en/latest/web-top/index.html",
   "devDependencies": {
     "@types/jest": "^27.5.2",
     "@types/node": "^12.20.11",
@@ -49,7 +48,6 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
-    "conventional-changelog-conventionalcommits": "^5.0.0",
     "eslint": "^7.25.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-node": "^11.1.0",
@@ -59,63 +57,17 @@
     "lint-staged": "^10.5.4",
     "polka": "^0.5.2",
     "prettier": "^2.2.1",
-    "semantic-release": "^19.0.2",
     "supertest": "^6.2.4",
     "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",
     "typescript": "^4.2.4"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/@tradingstrategy-ai/cz-conventional-changelog"
-    }
   },
   "lint-staged": {
     "*.ts": "eslint --cache --cache-location .eslintcache --fix"
   },
   "release": {
     "branches": [
-      "main"
-    ],
-    "plugins": [
-      [
-        "@semantic-release/commit-analyzer",
-        {
-          "preset": "conventionalcommits",
-          "releaseRules": [
-            {
-              "type": "build",
-              "scope": "deps",
-              "release": "patch"
-            }
-          ]
-        }
-      ],
-      [
-        "@semantic-release/release-notes-generator",
-        {
-          "preset": "conventionalcommits",
-          "presetConfig": {
-            "types": [
-              {
-                "type": "feat",
-                "section": "Features"
-              },
-              {
-                "type": "fix",
-                "section": "Bug Fixes"
-              },
-              {
-                "type": "build",
-                "section": "Dependencies and Other Build Updates",
-                "hidden": false
-              }
-            ]
-          }
-        }
-      ],
-      "@semantic-release/npm",
-      "@semantic-release/github"
+      "master"
     ]
   },
   "dependencies": {

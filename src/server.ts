@@ -1,5 +1,6 @@
 /**
  * A server interface for web-top client to get the active tasks from this Node.js process.
+ *
  */
 
 import http from 'http';
@@ -12,7 +13,7 @@ import { Tracker } from './tracker';
  */
 export enum WebTopServerActions {
   active_tasks = 'active-tasks',
-  completed_tasks = 'completedtasks',
+  completed_tasks = 'completed-tasks',
 }
 
 /**
@@ -72,7 +73,7 @@ export class TrackerServer {
         this.apiKey = process.env.TOP_WEB_API_KEY;
       } else {
         throw new APIKeyMustGivenError(
-          'API key not set for the web-top tracker server.' +
+          'API key not set for the web-top tracker server.\n' +
             'Please set TOP_WEB_API_KEY environment variable.'
         );
       }
@@ -102,6 +103,7 @@ export class TrackerServer {
       return false;
     }
 
+    // @ts-ignore
     const requestApiKey = request.query['api-key'];
     if (!requestApiKey) {
       response.statusCode = 403;
@@ -112,7 +114,7 @@ export class TrackerServer {
     if (requestApiKey != this.apiKey) {
       response.statusCode = 403;
       // Give a hint what could be wrong
-      response.end(`API key ${requestApiKey.slice(0, 4)}... does not match`);
+      response.end(`API key ${requestApiKey.slice(0, 4)}... does not match ${this.apiKey.slice(0, 4)}...`);
       return false;
     }
 

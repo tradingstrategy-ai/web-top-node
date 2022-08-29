@@ -20,7 +20,8 @@ class CannotHandleRequest extends Error {}
 class CannotTrackRequest extends Error {}
 
 // https://stackoverflow.com/a/55641743/315168
-const trim = (str, chars) => str.split(chars).filter(Boolean).join(chars);
+const trim = (str: string, chars: string) =>
+  str.split(chars).filter(Boolean).join(chars);
 
 /**
  * Track currently active and past HTTP requests in Node.js.
@@ -28,7 +29,6 @@ const trim = (str, chars) => str.split(chars).filter(Boolean).join(chars);
  * This hooks into the web server via startTask/endTask functions.
  */
 export class Tracker {
-
   /** Tracked ongoing requestes */
   activeTasks: Map<number, HTTPTask>;
 
@@ -105,20 +105,22 @@ export class Tracker {
     const address = request.socket.remoteAddress;
 
     // Currently we record HTTP GET params only
+    // @ts-ignore
     const params = request.query || undefined;
 
     const task: HTTPTask = {
       task_id: trackingId,
+      // @ts-ignore
       protocol: (url.protocol && trim(url.protocol, ':')) || null, // no ending :
+      // @ts-ignore
       host: url.host,
       method: request.method,
-      path: url.pathname,
+      path: url.path || undefined,
       params: params,
       tags: { ...this.tags, ...tags },
       client_ip_address: address,
     };
 
-    // TODO: How does Node.js handle request header repeat?
     task.request_headers = convertHeadersToTuples(request.headers);
 
     updateProcessInfo(task);
