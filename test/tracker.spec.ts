@@ -6,14 +6,18 @@ import { DEFAULT_MAX_COMPLETED_TASKS, Tracker } from '../src/tracker';
 import { IncomingMessage, ServerResponse } from 'http';
 import {getDefaultTags} from "../src";
 
-function generateMockRequest(): IncomingMessage {
+function generateMockRequest(url: string): IncomingMessage {
   const mockSocket = {
     remoteAddress: '127.0.0.1',
   };
   // @ts-ignore
   const request = new IncomingMessage(mockSocket);
 
-  request.url = 'https://example.com/foobar?name=grumpy';
+  if(!url) {
+    url = 'https://example.com/foobar?name=grumpy';
+  }
+
+  request.url = url;
   request.method = 'GET';
   request.headers = {
     'user-agent': 'Mochi mochi dayo!',
@@ -119,5 +123,14 @@ describe('tracker', () => {
       // @ts-ignore
       expect(tracker.completedTasks.at(-1).task_id).toEqual(245);
     });
+
+    it('should ignore named requests', () => {
+      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, {}, ["/tracker"]);
+      const request = generateMockRequest('https://example.com/tracker?api-key=grumpy');
+      expect(tracker.isIgnoredRequest(request)).toEqual(true);
+      const task = tracker.startTask(request);
+      expect(task).toBeNull();
+    });
+
   });
 });

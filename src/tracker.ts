@@ -98,7 +98,7 @@ export class Tracker {
     if(!url) {
       return false;
     }
-    const path = url.path || "";
+    const path = url.pathname || "";
     return this.ignorePaths.includes(path);
   }
 
