@@ -10,4 +10,4 @@ npm run build
 # See files get packed correctly
 npm pack
 # Upload to NPM
-npm publish
+npm publish --tag next
