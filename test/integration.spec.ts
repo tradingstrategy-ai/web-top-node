@@ -2,13 +2,13 @@
  * Node.js tracking integration tests with Polka server.
  *
  */
-import {DEFAULT_MAX_COMPLETED_TASKS, Tracker} from '../src/tracker';
+import { DEFAULT_MAX_COMPLETED_TASKS, Tracker } from '../src/tracker';
 import { createTrackerMiddleware } from '../src/middleware';
 import polka, { Polka } from 'polka';
 import { TrackerServer, WebTopServerActions } from '../src/server';
 import { IncomingMessage, ServerResponse } from 'http';
 import { agent as request } from 'supertest';
-import {getDefaultTags} from "../src";
+import { getDefaultTags } from '../src';
 
 function generateMockRequest(): IncomingMessage {
   const mockSocket = {
@@ -90,8 +90,7 @@ describe('integration', () => {
       expect(apiRequest.process_id).toBeGreaterThan(1);
 
       const tags = activeRequest.tags || {};
-      expect(tags["node.platform"]).not.toBeUndefined();
-
+      expect(tags['node.platform']).not.toBeUndefined();
     });
 
     it('tracker endpoint gives 403 if no API key is given', async () => {
@@ -168,7 +167,7 @@ describe('integration', () => {
       expect(completedRequest.status_code).toEqual(200);
       expect(completedRequest.status_message).toEqual('OK');
       const tags = completedRequest.tags || {};
-      expect(tags["node.platform"]).not.toBeUndefined();
+      expect(tags['node.platform']).not.toBeUndefined();
 
       // Check the tracker request looks good
       expect(trackerRequest.path).toEqual('/tracker');

@@ -198,13 +198,13 @@ export class Tracker {
     // Do some internal integrity checks
     if (!trackingId) {
       throw new CannotTrackRequest(
-        `request instance did not have reuest.trackingId set`
+        `request instance did not have request.trackingId set: ${request.url}`
       );
     }
 
     if (!task) {
       throw new CannotTrackRequest(
-        `request instance did not have request.trackingTask set`
+        `request instance did not have request.trackingTask set: ${request.url}`
       );
     }
 

@@ -120,11 +120,17 @@ node scripts/polka.js
 Then you can access the connect `web-top` application or 
 access the `/tracker` API endpoint directly (see below).
 
+In another terminal open `web-top`:
+
+```shell
+export TOP_WEB_API_KEY=... # Same API key as above
+web-top live --tracker-url="http://localhost:3000/tracker"
+```
 
 ## With SvelteKit
 
-Below is an example integration for [SvelteKit]() based websites
-that use [adapter-node]() for production deployments.
+Below is an example integration for [SvelteKit](https://kit.svelte.dev/) based websites
+that use [adapter-node](https://github.com/sveltejs/kit/tree/master/packages/adapter-node) for production deployments.
 
 ```javascript
 /**
@@ -146,10 +152,8 @@ import { handler } from '../build/handler.js';
 import express from 'express';
 import { Tracker, TrackerServer, createTrackerMiddleware } from '@trading-strategy-ai/web-top-node';
 
-// Create Polka server
-// See https://github.com/lukeed/polka
-// for more information.
-// (Polka is the default for SvelteKit)
+// Create Express server
+// Polka does not work https://github.com/sveltejs/kit/issues/6363
 const app = express();
 
 // Create HTTP request tracker.
@@ -172,7 +176,7 @@ const trackerServer = new TrackerServer(tracker);
 
 // Under which path we install the tracker API endpoint
 const trackerPath = "/tracker";
-app.use(trackerPath, trackerServer.serve.bind(trackerServer))
+app.get(trackerPath, trackerServer.serve.bind(trackerServer))
 
 // Install SvelteKit server-side renderer
 app.use(handler);
@@ -185,6 +189,19 @@ app.listen(3000, () => {
 ```
 
 [See open issue with SvelteKit that may affect you](https://github.com/sveltejs/kit/issues/6363).
+
+# Security 
+
+By default, the following items might be logged and available through
+the active request monitoring:
+
+- HTTP GET parameters
+- Request and response headers
+
+These may include user secrets like API tokens.
+If this is not suitable for your application security,
+you can modify the tracker to ignore specified
+HTTP fields.
 
 # Tracker API endpoint
 

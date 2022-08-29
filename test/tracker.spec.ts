@@ -4,16 +4,16 @@
 
 import { DEFAULT_MAX_COMPLETED_TASKS, Tracker } from '../src/tracker';
 import { IncomingMessage, ServerResponse } from 'http';
-import {getDefaultTags} from "../src";
+import { getDefaultTags } from '../src';
 
-function generateMockRequest(url: string): IncomingMessage {
+function generateMockRequest(url?: string): IncomingMessage {
   const mockSocket = {
     remoteAddress: '127.0.0.1',
   };
   // @ts-ignore
   const request = new IncomingMessage(mockSocket);
 
-  if(!url) {
+  if (!url) {
     url = 'https://example.com/foobar?name=grumpy';
   }
 
@@ -28,12 +28,16 @@ function generateMockRequest(url: string): IncomingMessage {
 describe('tracker', () => {
   describe('Tracker', () => {
     it('should track a new request', () => {
-      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, getDefaultTags(), []);
+      const tracker = new Tracker(
+        DEFAULT_MAX_COMPLETED_TASKS,
+        getDefaultTags(),
+        []
+      );
       const request = generateMockRequest();
       const task = tracker.startTask(request);
 
-      if(!task) {
-        throw new Error("Task expected");
+      if (!task) {
+        throw new Error('Task expected');
       }
 
       expect(tracker.activeTasks.size).toEqual(1);
@@ -77,7 +81,6 @@ describe('tracker', () => {
       const request = generateMockRequest();
       const response = new ServerResponse(request);
 
-
       response.statusCode = 200;
       response.statusMessage = 'OK';
 
@@ -87,8 +90,8 @@ describe('tracker', () => {
       tracker.startTask(request);
       const task = tracker.endTask(request, response);
 
-     if(!task) {
-        throw new Error("Task expected from endTask()");
+      if (!task) {
+        throw new Error('Task expected from endTask()');
       }
 
       // Task is correctly marked as completed
@@ -125,12 +128,15 @@ describe('tracker', () => {
     });
 
     it('should ignore named requests', () => {
-      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, {}, ["/tracker"]);
-      const request = generateMockRequest('https://example.com/tracker?api-key=grumpy');
+      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, {}, [
+        '/tracker',
+      ]);
+      const request = generateMockRequest(
+        'https://example.com/tracker?api-key=grumpy'
+      );
       expect(tracker.isIgnoredRequest(request)).toEqual(true);
       const task = tracker.startTask(request);
       expect(task).toBeNull();
     });
-
   });
 });
