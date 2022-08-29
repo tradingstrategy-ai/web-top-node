@@ -48,6 +48,13 @@ export class Tracker {
   /** Running counter to assign ids for requests */
   requestCounter: number;
 
+  /** Do not track this paths
+   *
+   * Blacklist of paths that should not go to the tracking.
+   * E.g. /tracker API requests themselves.
+   */
+  ignorePaths: string[];
+
   /**
    * Creates a new Tracker.
    *
@@ -56,11 +63,19 @@ export class Tracker {
    *  If not given use `process.env.TOP_MAX_COMPLETED_TASKS`
    *
    * @param tags If not given use getDefaultTags()
+   *
+   * @param ignorePaths
+   *  Do not track this paths (like fracker itself).
    */
-  constructor(maxCompletedTasks?: number, tags?: Tags) {
+  constructor(maxCompletedTasks?: number, tags?: Tags, ignorePaths?: string[]) {
     this.activeTasks = new Map();
     this.completedTasks = [];
     this.tags = tags || getDefaultTags();
+
+    if(!ignorePaths) {
+      ignorePaths = ["/tracker"]
+    }
+    this.ignorePaths = ignorePaths;
 
     this.requestCounter = 1;
 
@@ -76,6 +91,18 @@ export class Tracker {
   }
 
   /**
+   * Should we ignore this HTTP request?
+   */
+  isIgnoredRequest(request: IncomingMessage): boolean {
+    const url = parseurl(request);
+    if(!url) {
+      return false;
+    }
+    const path = url.path || "";
+    return this.ignorePaths.includes(path);
+  }
+
+  /**
    * Start tracking a new web request.
    *
    * Sets `trackingId` and `trackingTask` properties on the request.
@@ -85,8 +112,14 @@ export class Tracker {
    * @param tags Additional tags we want to track for this request
    *
    * @return The task that tracks the request
+   *  or null if the request is on ignore list
    */
-  startTask(request: IncomingMessage, tags?: Tags): HTTPTask {
+  startTask(request: IncomingMessage, tags?: Tags): HTTPTask | null {
+
+    if(this.isIgnoredRequest(request)) {
+      return null;
+    }
+
     tags = tags || {};
 
     if (!request.url) {
@@ -115,7 +148,7 @@ export class Tracker {
       // @ts-ignore
       host: url.host,
       method: request.method,
-      path: url.path || undefined,
+      path: url.pathname || undefined,
       params: params,
       tags: { ...this.tags, ...tags },
       client_ip_address: address,
@@ -146,9 +179,15 @@ export class Tracker {
    * @param request
    * @param response
    *
-   * @return The updated task information
+   * @return The task that tracks the request
+   *  or null if the request is on ignore list
    */
-  endTask(request: IncomingMessage, response: ServerResponse): HTTPTask {
+  endTask(request: IncomingMessage, response: ServerResponse): HTTPTask | null {
+
+    if(this.isIgnoredRequest(request)) {
+      return null;
+    }
+
     // @ts-ignore
     const trackingId: number = request.trackingId || null;
 

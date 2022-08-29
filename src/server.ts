@@ -114,7 +114,12 @@ export class TrackerServer {
     if (requestApiKey != this.apiKey) {
       response.statusCode = 403;
       // Give a hint what could be wrong
-      response.end(`API key ${requestApiKey.slice(0, 4)}... does not match ${this.apiKey.slice(0, 4)}...`);
+      response.end(
+        `API key ${requestApiKey.slice(
+          0,
+          4
+        )}... does not match ${this.apiKey.slice(0, 4)}...`
+      );
       return false;
     }
 

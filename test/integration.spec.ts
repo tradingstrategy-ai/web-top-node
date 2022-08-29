@@ -2,12 +2,13 @@
  * Node.js tracking integration tests with Polka server.
  *
  */
-import { Tracker } from '../src/tracker';
+import {DEFAULT_MAX_COMPLETED_TASKS, Tracker} from '../src/tracker';
 import { createTrackerMiddleware } from '../src/middleware';
 import polka, { Polka } from 'polka';
 import { TrackerServer, WebTopServerActions } from '../src/server';
 import { IncomingMessage, ServerResponse } from 'http';
 import { agent as request } from 'supertest';
+import {getDefaultTags} from "../src";
 
 function generateMockRequest(): IncomingMessage {
   const mockSocket = {
@@ -31,14 +32,14 @@ function generateMockResponse(request: IncomingMessage) {
   return response;
 }
 
-describe('integreration', () => {
+describe('integration', () => {
   describe('middleware', () => {
     let testPolka: Polka;
     let tracker: Tracker;
     const apiKey = '01234567789ABCDEF';
 
     beforeEach(() => {
-      tracker = new Tracker();
+      tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, getDefaultTags(), []);
       const trackerMiddleware = createTrackerMiddleware(tracker);
       const trackerServer = new TrackerServer(tracker, apiKey);
 
@@ -87,6 +88,10 @@ describe('integreration', () => {
       expect(apiRequest.path).toEqual('/tracker');
       expect(apiRequest.method).toEqual('GET');
       expect(apiRequest.process_id).toBeGreaterThan(1);
+
+      const tags = activeRequest.tags || {};
+      expect(tags["node.platform"]).not.toBeUndefined();
+
     });
 
     it('tracker endpoint gives 403 if no API key is given', async () => {
@@ -163,7 +168,7 @@ describe('integreration', () => {
       expect(completedRequest.status_code).toEqual(200);
       expect(completedRequest.status_message).toEqual('OK');
       const tags = completedRequest.tags || {};
-      expect(tags.platform).not.toBeUndefined();
+      expect(tags["node.platform"]).not.toBeUndefined();
 
       // Check the tracker request looks good
       expect(trackerRequest.path).toEqual('/tracker');

@@ -4,6 +4,7 @@
 
 import { DEFAULT_MAX_COMPLETED_TASKS, Tracker } from '../src/tracker';
 import { IncomingMessage, ServerResponse } from 'http';
+import {getDefaultTags} from "../src";
 
 function generateMockRequest(): IncomingMessage {
   const mockSocket = {
@@ -23,9 +24,14 @@ function generateMockRequest(): IncomingMessage {
 describe('tracker', () => {
   describe('Tracker', () => {
     it('should track a new request', () => {
-      const tracker = new Tracker();
+      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, getDefaultTags(), []);
       const request = generateMockRequest();
       const task = tracker.startTask(request);
+
+      if(!task) {
+        throw new Error("Task expected");
+      }
+
       expect(tracker.activeTasks.size).toEqual(1);
 
       // Check some task parameters
@@ -51,7 +57,7 @@ describe('tracker', () => {
       // Tags
       expect(task.tags).not.toBeUndefined();
       // @ts-ignore
-      expect(task.tags['node-version']).not.toBeUndefined();
+      expect(task.tags['node.platform']).not.toBeUndefined();
 
       // Timing
       expect(task.started_at).not.toBeUndefined();
@@ -63,9 +69,10 @@ describe('tracker', () => {
     });
 
     it('should finish a request tracking', () => {
-      const tracker = new Tracker();
+      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, {}, []);
       const request = generateMockRequest();
       const response = new ServerResponse(request);
+
 
       response.statusCode = 200;
       response.statusMessage = 'OK';
@@ -75,6 +82,10 @@ describe('tracker', () => {
 
       tracker.startTask(request);
       const task = tracker.endTask(request, response);
+
+     if(!task) {
+        throw new Error("Task expected from endTask()");
+      }
 
       // Task is correctly marked as completed
       expect(task.ended_at).not.toBeUndefined();
@@ -89,8 +100,8 @@ describe('tracker', () => {
     });
 
     it('should not overflow completed requests', () => {
-      const tracker = new Tracker();
-      const bombCount = 100;
+      const tracker = new Tracker(DEFAULT_MAX_COMPLETED_TASKS, {}, []);
+      const bombCount = 500;
 
       for (let i = 0; i < bombCount; i++) {
         const request = generateMockRequest();
@@ -104,9 +115,9 @@ describe('tracker', () => {
         DEFAULT_MAX_COMPLETED_TASKS
       );
 
-      expect(tracker.completedTasks[0].task_id).toEqual(100);
+      expect(tracker.completedTasks[0].task_id).toEqual(500);
       // @ts-ignore
-      expect(tracker.completedTasks.at(-1).task_id).toEqual(51);
+      expect(tracker.completedTasks.at(-1).task_id).toEqual(245);
     });
   });
 });
