@@ -53,6 +53,9 @@ Here is an example script
 - Using [Polka web server](https://github.com/lukeed/polka)
 - Should be compatible with any Express web server based Node.js website
 
+Below is JavaScript example, but there is also 
+[an example for Express.js and TypeScript](./src/express.ts) in the source tree.
+
 ```javascript
 /**
  * Polka example web server twith tracker.
