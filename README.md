@@ -4,6 +4,8 @@ Display active and complete HTTP requests of your Node.js web server easily.
 This package adds support for [web-top](https://github.com/tradingstrategy-ai/web-top)
 for your application.
 
+![screenshot](./screenshot.png)
+
 Supported web serves include, but not limited to
 
 * [Node.js built-in HTTP server](https://nodejs.org/api/http.html)
